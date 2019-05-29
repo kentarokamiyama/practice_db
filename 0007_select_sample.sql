@@ -30,14 +30,6 @@ FROM lend
 WHERE
     return_flag = 0
 ;
--- 端末ごとの貸出回数
-SELECT
-    device_id
-    ,COUNT(*)
-FROM lend
-GROUP BY
-    device_id
-;
 -- 当日もしくは翌日に返却された貸出
 SELECT
     *
@@ -48,6 +40,23 @@ WHERE
         DATEDIFF(return_datetime, lend_datetime) <= 1
     )
 ;
+-- 端末ごとの貸出回数
+SELECT
+    device_id
+    ,COUNT(*)
+FROM lend
+GROUP BY
+    device_id
+;
+-- 3回以上貸し出された端末
+SELECT
+    device_id
+    ,COUNT(*)
+FROM lend
+GROUP BY
+    device_id
+HAVING
+    COUNT(*) >= 3
 
 /* 複数のテーブルからデータを取得する */
 -- 端末のモデル名、OS名、通信キャリア名を取得
