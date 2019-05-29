@@ -3,6 +3,7 @@ VALUES
     ('Galaxy Note9', 1, '8.1', 2)
     ,('Xperia XZ3', 1, '8.0', 2)
     ,('iPhone 8', 2, '12.1', 2)
+    ,('AQUOS R', 1, '7.1', 0)
 ;
 
 INSERT INTO device_lend_status (device_id)

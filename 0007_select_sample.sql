@@ -30,14 +30,6 @@ FROM lend
 WHERE
     return_flag = 0
 ;
--- 端末ごとの貸出回数
-SELECT
-    device_id
-    ,COUNT(*)
-FROM lend
-GROUP BY
-    device_id
-;
 -- 当日もしくは翌日に返却された貸出
 SELECT
     *
@@ -48,19 +40,38 @@ WHERE
         DATEDIFF(return_datetime, lend_datetime) <= 1
     )
 ;
-
+-- 端末ごとの貸出回数
+SELECT
+    device_id
+    ,COUNT(*)
+FROM lend
+GROUP BY
+    device_id
+;
+-- 3回以上貸し出された端末
+SELECT
+    device_id
+    ,COUNT(*)
+FROM lend
+GROUP BY
+    device_id
+HAVING
+    COUNT(*) >= 3
+;
 /* 複数のテーブルからデータを取得する */
 -- 端末のモデル名、OS名、通信キャリア名を取得
 SELECT
     D.device_id
     ,D.model_name
     ,OM.os_name
-    ,CM.carrier_name
+    ,IFNULL(CM.carrier_name, '(キャリア契約なし)') AS carrier_name
 FROM device AS D
 INNER JOIN os_master AS OM
     ON D.os_id = OM.os_id
-INNER JOIN telecom_carrier_master AS CM
+LEFT OUTER JOIN telecom_carrier_master AS CM
     ON D.carrier_id = CM.carrier_id
+ORDER BY
+    D.device_id
 ;
 -- 貸出中の端末
 SELECT
@@ -70,9 +81,17 @@ FROM device_lend_status AS S
 INNER JOIN device AS D
     ON S.device_id = D.device_id
 WHERE
-    S.lended = 0
+    S.lended = 1
 ;
-
+-- 貸出状態を表示
+SELECT
+    D.device_id
+    ,D.model_name
+    ,CASE WHEN S.lended = 1 THEN '■貸出中' ELSE '□貸出可能' END AS '貸出状況'
+FROM device_lend_status AS S
+INNER JOIN device AS D
+    ON S.device_id = D.device_id
+;
 -- 返却していない端末をもっている利用者
 SELECT
     CONCAT(U.last_name, ' ', U.first_name) AS user_name
