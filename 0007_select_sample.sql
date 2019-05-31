@@ -9,6 +9,14 @@ SELECT
     model_name
 FROM device
 ;
+-- OSごとの端末数
+SELECT
+    os_id
+    ,COUNT(*) AS 端末数
+FROM device
+GROUP BY
+    os_id
+;
 -- iOS端末だけ取得
 SELECT
     *
@@ -23,14 +31,14 @@ FROM device
 WHERE
     model_name LIKE '%xperia%'
 ;
--- 返却されていない貸出データ
+-- 返却済の貸出データ
 SELECT
     *
 FROM lend
 WHERE
-    return_flag = 0
+    return_flag = 1
 ;
--- 当日もしくは翌日に返却された貸出
+-- 当日もしくは翌日に返却された貸出データ
 SELECT
     *
 FROM lend
