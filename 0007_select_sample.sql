@@ -91,6 +91,23 @@ INNER JOIN device AS D
 WHERE
     S.lended = 1
 ;
+-- 端末データと、端末ごとの貸し出し回数
+SELECT
+    D.device_id
+    ,IFNULL(L.lend_count, 0) AS lend_count
+FROM device AS D
+LEFT OUTER JOIN (
+    SELECT
+        device_id
+        ,COUNT(*) AS lend_count
+    FROM lend
+    GROUP BY
+        device_id
+) AS L
+    ON D.device_id = L.device_id
+GROUP BY
+    device_id
+;
 -- 貸出状態を表示
 SELECT
     D.device_id
